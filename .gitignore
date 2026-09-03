@@ -1,0 +1,4 @@
+.cache/
+a.out
+build/
+**/dummy.cpp
