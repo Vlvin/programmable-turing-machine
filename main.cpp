@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <deque>
+#include <initializer_list>
 #include <iostream>
 #include <map>
 #include <tuple>
@@ -9,10 +11,15 @@ public:
   typedef enum { LEFT, RIGHT, STAY } Move;
   typedef std::map<A, std::tuple<size_t, A, Move>> Q;
 
+  TuringMachine(const std::deque<A> &init, const std::vector<Q> &q)
+      : tape(init), q(q), state(0),
+        position(std::find_if(tape.begin(), tape.end(),
+                              [](const A &a) { return a != A::LAMBDA; })) {}
+
   bool process_cell() {
-    if (states[state].size() == 0)
+    if (q[state].size() == 0)
       return false;
-    auto &neostate = states[state][*position];
+    auto &neostate = q[state][*position];
     *position = std::get<A>(neostate);
     state = std::get<size_t>(neostate);
     switch (std::get<Move>(neostate)) {
@@ -32,10 +39,34 @@ public:
     return true;
   }
 
+  void print_tape() {
+    for (auto &a : tape) {
+      std::cout << (char)a << ' ';
+    }
+    std::cout << std::endl;
+  }
+  void run() {
+    std::cout << *this;
+    while (this->process_cell())
+      std::cout << *this;
+  }
+  friend std::ostream& operator<<(std::ostream& os, const TuringMachine<A> &tm) {
+    for (auto ii = tm.tape.begin(); ii != tm.tape.end(); ii++) {
+      if (ii == tm.position)
+        os << '[';
+      else if (ii-1 != tm.position)
+        os << ' ';
+      os << (char)*ii;
+      if (ii == tm.position)
+        os << ']';
+    }
+    os << std::endl;
+    return os;
+  }
+
 private:
-  std::vector<Q> states;
+  std::vector<Q> q;
   size_t state;
-  std::vector<A> values;
   std::deque<A> tape;
   decltype(tape.begin()) position;
 };
@@ -46,7 +77,30 @@ enum MyA {
   STAR = '*',
 };
 
+typedef ::TuringMachine<MyA>::Move Move;
+
 int main() {
-  TuringMachine<MyA> tm;
-  tm.process_cell();
+  TuringMachine<MyA> tm({ONE, ONE, STAR, ONE, ONE},
+                        {
+                            // vector
+                            { // 0
+                                // of maps
+                                {ONE, {0, ONE, Move::RIGHT}}, // of pairs
+                                {STAR, {1, ONE, Move::LEFT}},
+                            },
+                            { 
+                                {ONE, {1, ONE, Move::LEFT}},
+                                {LAMBDA, {2, LAMBDA, Move::RIGHT}},
+                            },
+                            { 
+                                {ONE, {3, LAMBDA, Move::RIGHT}},
+                            },
+                            { 
+                                {ONE, {4, LAMBDA, Move::RIGHT}},
+                            },
+                            { // empty is P
+
+                            },
+                        });
+  tm.run();
 }
