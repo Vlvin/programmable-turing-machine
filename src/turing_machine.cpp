@@ -8,7 +8,7 @@
 template <class A> class TuringMachine {
 public:
   typedef enum { LEFT, RIGHT, STAY } Move;
-  typedef std::map<A, std::tuple<size_t, A, Move>> Q;
+  typedef std::map<A, std::tuple<A, Move, size_t>> Q;
 
   TuringMachine(const std::deque<A> &init, const std::vector<Q> &q)
       : tape(init), q(q), state(0),

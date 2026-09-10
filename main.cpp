@@ -12,14 +12,13 @@ typedef ::TuringMachine<MyA>::Move Move;
 
 #define S(on, ch_to, move, next_state)                                         \
   {                                                                            \
-    (on), { (next_state), (ch_to), (move) }                                    \
+    (on), { (ch_to), (move), (next_state) }                                    \
   }
 
 int main() {
 #define P 5
   TuringMachine<MyA> tm("^111*111^",
                         {
-                            // Q
                             {
                                 // 0
                                 S(ONE, LAMBDA, Move::RIGHT, 1), // of pairs
