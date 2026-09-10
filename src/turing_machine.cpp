@@ -14,6 +14,14 @@ public:
       : tape(init), q(q), state(0),
         position(std::find_if(tape.begin(), tape.end(),
                               [](const A &a) { return a != A::LAMBDA; })) {}
+  TuringMachine(const std::string &init, const std::vector<Q> &q)
+      : tape(init.size()), q(q), state(0),
+        position(tape.begin()) {
+          for (int i = 0; i < init.size(); i++)
+            tape[i] = (A)init[i];
+        position = std::find_if(tape.begin(), tape.end(),
+                              [](const A &a) { return a != A::LAMBDA; });
+        }
 
   bool process_cell() {
     if (q[state].size() == 0)
