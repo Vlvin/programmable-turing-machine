@@ -3,6 +3,8 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <stdexcept>
+#include <string>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -29,6 +31,8 @@ public:
   bool process_cell() {
     if (q[state].size() == 0)
       return false;
+    if (q[state].count(*position) != 1)
+      throw std::runtime_error(std::string("in state q") + std::to_string(state) + " symbol '" + (char)*position + "' is unhandled");
     auto &neostate = q[state][*position];
     *position = std::get<A>(neostate);
     auto state_var = std::get<state_i_t>(neostate);
@@ -66,6 +70,10 @@ public:
   }
   friend std::ostream &operator<<(std::ostream &os,
                                   const TuringMachine<A> &tm) {
+    if (tm.state >= 0 && tm.q[tm.state].size())
+      os << 'q' << tm.state << ": ";
+    else 
+      os << 'P' << ": ";
     for (auto ii = tm.tape.begin(); ii != tm.tape.end(); ii++) {
       if (ii == tm.position)
         os << '[';
