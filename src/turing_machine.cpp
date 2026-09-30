@@ -29,7 +29,7 @@ public:
   }
 
   bool process_cell() {
-    if (q[state].size() == 0)
+    if (state < 0 || q[state].size() == 0)
       return false;
     if (q[state].count(*position) != 1)
       throw std::runtime_error(std::string("in state q") + std::to_string(state) + " symbol '" + (char)*position + "' is unhandled");
@@ -88,7 +88,7 @@ public:
   }
 
   const size_t P() const {
-    if (q.size() == 0)
+    if (q.size() == 0 || q.back().size() > 0)
       return -1;
     return q.size() - 1;
   }
